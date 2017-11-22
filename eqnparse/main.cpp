@@ -8,7 +8,7 @@
 
 using namespace std;
 
-string check(string input_string)
+string parse(string input_string)
 {
     typedef enum state {p, q,
         q_plus, q_minus, q_mul, q_div, q_lpar, q_rpar,
@@ -84,20 +84,20 @@ string check(string input_string)
         catch (out_of_range& e)
         {
             try
-            {
+            { // transition reading input character, not reading stack
                 next_conf = transition.at(make_tuple(curr_state, *it, EPS));
                 it++;
             }
             catch (out_of_range& e)
             {
                 try
-                { // transition reading input character
+                { // transition reading input character and stack
                     next_conf = transition.at(make_tuple(curr_state, *it, curr_stack));
                     pa_stack.pop();
                     it++;
                 }
                 catch (out_of_range& e)
-                {
+                { // no transitions possible
                     return "No";
                 }
             }
@@ -117,10 +117,8 @@ string check(string input_string)
 
         curr_state = next_state;
         reverse(next_stack.begin(), next_stack.end());
-
         for (stack_alphabet &sa : next_stack)
         { // update stack
-            cout << "Stack Push: " << sa << '\n';
             pa_stack.push(sa);
         }
     }
@@ -131,18 +129,9 @@ string check(string input_string)
 int main()
 {
     ios::sync_with_stdio(false);
-    /*
-    ifstream infile("input.txt");
-    ofstream outfile("2017_19871.out");
-
-    string input_string;
-    infile >> input_string;
-
-    outfile << check(input_string);
-    */
 
     string input_string;
     cin >> input_string;
-    cout << check(input_string) << '\n';
+    cout << parse(input_string);
     return 0;
 }
